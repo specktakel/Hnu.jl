@@ -2,3 +2,15 @@ name = "Hnu"
 uuid = "a1272aa4-dd8a-4b98-8998-982c36939de1"
 version = "0.1.0"
 authors = ["Julian Kuhlmann <kuhlmann@mpp.mpg.de>"]
+
+[deps]
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+SkyCoords = "fc659fc5-75a3-5475-a2ea-3da92c065361"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
+[compat]
+DelimitedFiles = "1.9.1"
+IJulia = "1.33.0"
+SkyCoords = "1.7.0"
+Unitful = "1.27.0"
