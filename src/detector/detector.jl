@@ -3,8 +3,11 @@ module Detector
 struct EffectiveArea
     season
     log10eBins
+    c_log10eBins
     sinDecBins
+    c_sinDecBins
     areaGrid
+    interp
 end
 
 const IC40 = 1
@@ -42,7 +45,14 @@ function loadEffectiveArea(season)
     N_energy = length(log10eBins) - 1
     N_dir = length(sinDecBins) - 1
     area = reshape(data[:, 5], (N_energy, N_dir))
-    EffectiveArea(season, log10eBins,  sinDecBins, area)
+    c_log10eBins = (ebins[1:end-1] + ebins[2:end]) / 2
+    c_sinDecBins = (sinDecBins[1:end-1] + sinDecBins[2:end]) / 2
+    c_log10eBins[1] = log10eBins[1]
+    c_log10eBins[end] = log10eBins[end]
+    c_sinDecBins[1] = sinDecBins[1]
+    c_sinDecBins[end] = sinDecBins[end]
+    interp = linear_interpolation((c_log10eBins, c_sinDecBins), area)
+    EffectiveArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area, interp)
 end
 
 end
