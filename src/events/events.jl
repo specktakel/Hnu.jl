@@ -39,26 +39,40 @@ end
 
 EventList(mjd, ra, dec, ang_err, energy, detector) = EventList(mjd, ra, dec, ang_err, ICRSCoords.(ra, dec), energy, detector, length(energy))
 
-function loadEvents(fname::String)
-    if "40" occursin(fname)
-        detector = IC40
-    elseif "59" occursin(fname)
-        detector = IC59
-    elseif "79" occursin(fname)
-        detector = IC79
-    elseif "IC86_II" occursin(fname)
-        detector = IC86_II
-    elseif "IC86_I" occursin(fname)
-        detector = IC86_I
+function loadEvents(season)
+    fname = IC40_PATH
+    if season == IC40
+        fname = IC40_PATH
+    elseif season == IC59
+        fname = IC59_PATH
+    elseif season == IC79
+        fname = IC79_PATH
+    elseif season == IC86_I
+        fname = IC86_I_PATH
+    elseif season == IC86_II
+        fname == IC86_II_PATH
     else
         println("unsupported detector")
     end
-    events = readdlm(fname, Float64, comments=true, comment_char='#')
-    detector_vector = Vector{Int}(detector, lenght(events[:, 2]))
+    if season != IC86_II
+        events = readdlm(fname, Float64, comments=true, comment_char='#')
+    else
+        events = readdlm(IC86_II_PATH, Float64, comments=true, comment_char='#') 
+        for fname in [IC86_III_PATH, IC86_IV_PATH, IC86_V_PATH, IC86_VI_PATH, IC86_VII_PATH]
+            events = vcat(events, readdlm(fname, Float64, comments=true, comment_char='#'))
+        end
+    end
+    detector_vector = fill(season, length(events[:, 2]))
     EventList(events[:, 1], events[:, 4]u"deg", events[:, 5]u"deg", events[:, 3]u"deg", events[:, 2], detector_vector)
 end
 
 function selectEvents!(events::EventList, roi::CircularROI)
+    mask = Vector{Bool}(undef, events.N);
+
+    for i = 1:events.N
+        mask[i] = separation(events.coords[i], roi.center) <= ustrip(u"rad", roi.radius)
+    end
+    selectEvents!(events, mask)
 end
 
 
