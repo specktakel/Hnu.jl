@@ -48,7 +48,7 @@ function loadEffectiveArea(season)
     N_energy = length(log10eBins) - 1
     N_dir = length(sinDecBins) - 1
     area = reshape(data[:, 5], (N_energy, N_dir))
-    c_log10eBins = (ebins[1:end-1] + ebins[2:end]) / 2
+    c_log10eBins = (log10eBins[1:end-1] + log10eBins[2:end]) / 2
     c_sinDecBins = (sinDecBins[1:end-1] + sinDecBins[2:end]) / 2
     c_log10eBins[1] = log10eBins[1]
     c_log10eBins[end] = log10eBins[end]
@@ -77,6 +77,12 @@ function loadEnergyResolution()
     etrue[end] = 9.0
     interp = linear_interpolation((ereco, etrue), eres)
     EnergyResolution(ereco, etrue, eres, interp)
+end
+
+struct DetectorModel
+    season
+    eres
+    aeff
 end
 
 end
