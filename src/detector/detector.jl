@@ -1,5 +1,8 @@
 module Detector
 
+using DelimitedFiles
+using Interpolations
+
 struct EffectiveArea
     season
     log10eBins
@@ -53,6 +56,27 @@ function loadEffectiveArea(season)
     c_sinDecBins[end] = sinDecBins[end]
     interp = linear_interpolation((c_log10eBins, c_sinDecBins), area)
     EffectiveArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area, interp)
+end
+
+
+struct EnergyResolution
+    #season
+    c_log10eRecoBins
+    c_log10eTrueBins
+    eres
+    interp
+end
+
+function loadEnergyResolution()
+    ereco = Vector(range(start=1.05, stop=9.00, step=0.01))
+    path = joinpath(@__DIR__, "../../inputs/eres_ic86ii.dat")
+    eres = readdlm(path)
+    path = joinpath(@__DIR__, "../../inputs/eres_ic86ii_true_e_binc.dat")
+    etrue = readdlm(path)[:, 1]
+    etrue[1] = 2.0
+    etrue[end] = 9.0
+    interp = linear_interpolation((ereco, etrue), eres)
+    EnergyResolution(ereco, etrue, eres, interp)
 end
 
 end
