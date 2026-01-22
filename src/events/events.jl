@@ -6,7 +6,7 @@ using Unitful
 
 import ..ROI: CircularROI
 
-const BASEPATH = "/Users/David/.icecube_data/20210126_PS-IC40-IC86_VII/icecube_10year_ps/events"
+const BASEPATH = joinpath(homedir(), ".icecube_data/20210126_PS-IC40-IC86_VII/icecube_10year_ps/events")
 
 const IC40_PATH = joinpath(BASEPATH, "IC40_exp.csv")
 const IC59_PATH = joinpath(BASEPATH, "IC59_exp.csv")
