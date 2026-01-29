@@ -11,6 +11,7 @@ struct EffectiveArea
     c_sinDecBins
     areaGrid
     interp
+    interp_log
 end
 
 const IC40 = 1
@@ -19,7 +20,7 @@ const IC79 = 3
 const IC86_I = 4
 const IC86_II = 5
 
-BasePath = "/Users/David/.icecube_data/20210126_PS-IC40-IC86_VII/icecube_10year_ps/irfs"
+BasePath = joinpath(homedir(), ".icecube_data/20210126_PS-IC40-IC86_VII/icecube_10year_ps/irfs")
 IC40_path = "IC40_effectiveArea.csv"
 IC59_path = "IC59_effectiveArea.csv"
 IC79_path = "IC79_effectiveArea.csv"
@@ -55,7 +56,10 @@ function loadEffectiveArea(season)
     c_sinDecBins[1] = sinDecBins[1]
     c_sinDecBins[end] = sinDecBins[end]
     interp = linear_interpolation((c_log10eBins, c_sinDecBins), area)
-    EffectiveArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area, interp)
+    nonzero_min = minimum(eff[eff.>0.])
+    area[area==0.] = 1e-2 * nonzero_min
+    interp_log = linear_interpolation((c_log10eBins, c_sinDecBins), log(area))
+    EffectiveArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area, interp, interp_log)
 end
 
 
