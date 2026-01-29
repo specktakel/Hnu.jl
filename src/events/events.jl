@@ -39,6 +39,11 @@ end
 
 EventList(mjd, ra, dec, ang_err, energy, detector) = EventList(mjd, ra, dec, ang_err, ICRSCoords.(ra, dec), energy, detector, length(energy))
 
+"""
+    loadEvent(season)
+
+Load all events recorded during the provided season.
+"""
 function loadEvents(season)
     fname = IC40_PATH
     if season == IC40
@@ -66,6 +71,11 @@ function loadEvents(season)
     EventList(events[:, 1], events[:, 4]u"deg", events[:, 5]u"deg", events[:, 3]u"deg", events[:, 2], detector_vector)
 end
 
+"""
+    selectEvents!(events::EventList, roi::CircularROI)
+
+Restrict events to the provided roi.
+"""
 function selectEvents!(events::EventList, roi::CircularROI)
     mask = Vector{Bool}(undef, events.N);
 
@@ -76,6 +86,11 @@ function selectEvents!(events::EventList, roi::CircularROI)
 end
 
 
+"""
+    selectEvents!(events::EventList, mask)
+
+Select events based on provided mask
+"""
 function selectEvents!(events::EventList, mask)
     events.mjd = events.mjd[mask]
     events.ra = events.ra[mask]

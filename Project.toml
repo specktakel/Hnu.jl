@@ -22,3 +22,6 @@ Revise = "3.13.1"
 SkyCoords = "1.7.0"
 Test = "1.11.0"
 Unitful = "1.27.0"
+
+[workspace]
+projects = ["docs"]

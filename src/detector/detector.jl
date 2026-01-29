@@ -3,14 +3,23 @@ module Detector
 using DelimitedFiles
 using Interpolations
 
+"Effective area"
 struct EffectiveArea
+    "Detector season"
     season
+    "log10 energy/GeV bin edges"
     log10eBins
+    "Centers of log10 energy/GeV bins"
     c_log10eBins
+    "sin dec bin edges"
     sinDecBins
+    "Centers of sin dec bin edges"
     c_sinDecBins
+    "Actual effective area on grid of log10eBins and sinDecBins"
     areaGrid
+    "Method for interpolation of areaGrid"
     interp
+    "Method for interpolation of logarithmic areaGrid"
     interp_log
 end
 
@@ -28,6 +37,11 @@ IC86_I_path = "IC86_I_effectiveArea.csv"
 IC86_II_path = "IC86_II_effectiveArea.csv"
 
 
+"""
+    loadEffectiveArea(season)
+
+Load the effective area of a given season.
+"""
 function loadEffectiveArea(season)
     if season == IC40
         path = joinpath(BasePath, IC40_path)
@@ -71,6 +85,11 @@ struct EnergyResolution
     interp
 end
 
+"""
+    loadEnergyResolution()
+
+Load the energy resolution. Currently defaults to IC86_II
+"""
 function loadEnergyResolution()
     ereco = Vector(range(start=1.05, stop=9.00, step=0.01))
     path = joinpath(@__DIR__, "../../inputs/eres_ic86ii.dat")
