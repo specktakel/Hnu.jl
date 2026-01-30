@@ -56,9 +56,9 @@ function loadEffectiveArea(season)
     c_sinDecBins[1] = sinDecBins[1]
     c_sinDecBins[end] = sinDecBins[end]
     interp = linear_interpolation((c_log10eBins, c_sinDecBins), area)
-    nonzero_min = minimum(eff[eff.>0.])
-    area[area==0.] = 1e-2 * nonzero_min
-    interp_log = linear_interpolation((c_log10eBins, c_sinDecBins), log(area))
+    nonzero_min = minimum(area[area .> 0.])
+    area[area.==0.] .= 1e-2 * nonzero_min
+    interp_log = linear_interpolation((c_log10eBins, c_sinDecBins), log.(area))
     EffectiveArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area, interp, interp_log)
 end
 
