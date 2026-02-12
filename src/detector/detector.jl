@@ -5,13 +5,11 @@ using Interpolations
 
 struct EffectiveArea
     season
-    log10eBins
+    log10eBins    # log10(E/GeV)
     c_log10eBins
-    sinDecBins
+    sinDecBins   # dimension less
     c_sinDecBins
-    areaGrid
-    interp    # accidental OOP, why is this working regardless of julia being non-OOP?
-    interp_log
+    area    # in m2
 end
 
 const IC40 = 1
@@ -48,20 +46,29 @@ function loadEffectiveArea(season)
     sinDecBins = sind.(sort!(collect((Set(round.(data[:, 3:4], sigdigits=2))))))
     N_energy = length(log10eBins) - 1
     N_dir = length(sinDecBins) - 1
-    area = reshape(data[:, 5], (N_energy, N_dir))
+    area = reshape(data[:, 5], (N_energy, N_dir)) * 1e-4   # unit:m2
     c_log10eBins = (log10eBins[1:end-1] + log10eBins[2:end]) / 2
     c_sinDecBins = (sinDecBins[1:end-1] + sinDecBins[2:end]) / 2
     c_log10eBins[1] = log10eBins[1]
     c_log10eBins[end] = log10eBins[end]
     c_sinDecBins[1] = sinDecBins[1]
     c_sinDecBins[end] = sinDecBins[end]
-    interp = linear_interpolation((c_log10eBins, c_sinDecBins), area)
-    nonzero_min = minimum(area[area .> 0.])
-    area[area.==0.] .= 1e-2 * nonzero_min
-    interp_log = linear_interpolation((c_log10eBins, c_sinDecBins), log.(area))
-    EffectiveArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area, interp, interp_log)
+    EffectiveArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area)
 end
 
+function constructEffectiveAreaInterpolation(aeff::EffectiveArea)
+    area = copy(aeff.area)
+    nonzero_min = minimum(area[area .> 0.])
+    area[area.==0.] .= 1e-2 * nonzero_min
+    linear_interpolation((aeff.c_log10eBins, aeff.c_sinDecBins), area)
+end
+
+function constructEffectiveAreaLogInterpolation(aeff::EffectiveArea)
+    area = copy(aeff.area)
+    nonzero_min = minimum(area[area .> 0.])
+    area[area.==0.] .= 1e-2 * nonzero_min
+    linear_interpolation((aeff.c_log10eBins, aeff.c_sinDecBins), log.(area))
+end
 
 struct EnergyResolution
     #season
