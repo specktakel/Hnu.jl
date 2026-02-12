@@ -6,5 +6,7 @@ include("utils/utils.jl")
 include("events/events.jl")
 include("sources/sources.jl")
 include("sources/spectrum.jl")
+include("sources/precomputation.jl")
+include("sources/cosmology.jl")
 include("detector/detector.jl")
 end
