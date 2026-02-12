@@ -1,12 +1,10 @@
 module Cosmology
 
 using Integrals: IntegralProblem, solve, QuadGKJL
+include("./cosmo_units.jl")
 using Unitful
+using .CosmoUnits
 using Roots
-
-Unitful.register(@__MODULE__)
-
-@unit pc "pc" pc 3.0857e16u"m" true
 
 Om = 0.3
 Ol = 0.7
