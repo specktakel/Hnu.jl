@@ -2,6 +2,9 @@ module Sources
 
 using SkyCoords
 
+#include("./spectrum.jl")
+#import .Spectrum
+
 export SourceList, PointSource, AstroDiff, Atmospheric
 abstract type Source end
 

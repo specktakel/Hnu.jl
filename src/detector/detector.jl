@@ -10,7 +10,7 @@ struct EffectiveArea
     sinDecBins
     c_sinDecBins
     areaGrid
-    interp
+    interp    # accidental OOP, why is this working regardless of julia being non-OOP?
     interp_log
 end
 
