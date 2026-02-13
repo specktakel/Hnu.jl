@@ -10,4 +10,6 @@ include("sources/precomputation.jl")
 include("sources/cosmo_units.jl")
 include("sources/cosmology.jl")
 include("detector/detector.jl")
+include("detector/lifetime.jl")
+
 end

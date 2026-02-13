@@ -1,5 +1,7 @@
 module Spectrum
 
+using Integrals: IntegralProblem, solve, QuadGKJL
+
 function powerLaw(params::NamedTuple)
     N0 = params.norm
     x = params.E
@@ -10,11 +12,32 @@ end
 
 function powerLawLogDomain(params::NamedTuple)
     N0 = params.norm
-    log10x = params.log10x
+    log10x = params.log10E
     gamma = params.gamma
-    log10x0 = params.log10x0
-    x0 = params.x0
+    log10x0 = params.log10E0
+    x0 = params.E0
     return N0 * x0 * (10^(log10x - log10x0))^(-gamma + 1) * log(10.)
 end
+
+function EnergyFluxPowerLaw(params::NamedTuple, Emin, Emax)
+    function integrand(logx, p)
+        E0 = p.E0
+        params = merge(p, log10x=logx, log10E0=log10(params.E0))
+        return powerLawLogDomain(params) * E0
+    end
+
+    sol = solve(IntegralProblem(integrand, (log10(Emin), log10(Emax)), params), QuadGKJL())
+    return sol.u
+end
+
+function NumberFluxPowerLaw(params::NamedTuple, Emin, Emax)
+   function integrand(logx, p)
+        params = merge(p, log10x=logx, log10x0=log10(params.x0))
+        return powerLawLogDomain(params)
+    end
+
+    sol = solve(IntegralProblem(integrand, (log10(Emin), log10(Emax)), params), QuadGKJL())
+    return sol.u
+end 
 
 end
