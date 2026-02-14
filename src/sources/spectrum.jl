@@ -21,23 +21,22 @@ end
 
 function EnergyFluxPowerLaw(params::NamedTuple, Emin, Emax)
     function integrand(logx, p)
-        E0 = p.E0
-        params = merge(p, log10x=logx, log10E0=log10(params.E0))
-        return powerLawLogDomain(params) * E0
+        params = merge(p, (log10E=logx,))
+        return powerLawLogDomain(params) * p.E0
     end
-
-    sol = solve(IntegralProblem(integrand, (log10(Emin), log10(Emax)), params), QuadGKJL())
+    p = merge(params, (log10E0=log10(params.E0), gamma=params.gamma + 1.))
+    sol = solve(IntegralProblem(integrand, (log10(Emin), log10(Emax)), p), QuadGKJL())
     return sol.u
 end
 
 function NumberFluxPowerLaw(params::NamedTuple, Emin, Emax)
-   function integrand(logx, p)
-        params = merge(p, log10x=logx, log10x0=log10(params.x0))
+    function integrand(logx, p)
+        params = merge(p, (log10E=logx,))
         return powerLawLogDomain(params)
     end
-
-    sol = solve(IntegralProblem(integrand, (log10(Emin), log10(Emax)), params), QuadGKJL())
+    p = merge(params, (log10E0=log10(params.E0),))
+    sol = solve(IntegralProblem(integrand, (log10(Emin), log10(Emax)), p), QuadGKJL())
     return sol.u
-end 
+end
 
 end

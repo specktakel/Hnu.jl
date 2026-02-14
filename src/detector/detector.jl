@@ -75,7 +75,6 @@ struct EnergyResolution
     c_log10eRecoBins
     c_log10eTrueBins
     eres
-    interp
 end
 
 function loadEnergyResolution()
@@ -86,8 +85,14 @@ function loadEnergyResolution()
     etrue = readdlm(path)[:, 1]
     etrue[1] = 2.0
     etrue[end] = 9.0
-    interp = linear_interpolation((ereco, etrue), eres)
-    EnergyResolution(ereco, etrue, eres, interp)
+    EnergyResolution(ereco, etrue, eres)
+end
+
+function loadEnergyLikelihood(eres::EnergyResolution)
+    ereco = eres.c_log10eRecoBins
+    etrue = eres.c_log10eTrueBins
+    grid = eres.eres
+    interp = linear_interpolation((ereco, etrue), grid)
 end
 
 struct DetectorModel
