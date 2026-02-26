@@ -34,6 +34,7 @@ using Integrals
 using LaTeXStrings
 using Roots
 using Hnu.CosmoUnits
+using StatsFuns: logsumexp
 ```
 
 ```julia
@@ -170,10 +171,6 @@ end
 ```
 
 ```julia
-background_llh((Nex_bg=250., E=events.energy .+1.))
-```
-
-```julia
 function llh(params)
     event_llh = zeros(Float64, events.N, 2)
     event_llh[:, 1] = signal_llh(params)
@@ -183,7 +180,21 @@ end
 ```
 
 ```julia
-signal_llh((gamma=2.0, Nex=10, E = 10 .^(events.energy .+ 1.)))
+likelihood = let signal_llh = signal_llh, background_llh = background_llh
+    logfuncdensity(function (params)
+        function loglike(params, signal_llh, background_llh)
+            signal = signal_llh(params)
+            bg = background_llh(params)
+
+            llh = -params.Nex - params.Nex_bg
+            for i=1:len(signal)
+                llh += logsumexp(signal[i], bg[i])
+            end
+            llh
+        end
+        loglike(params)
+    end)
+end
 ```
 
 ```julia
