@@ -89,13 +89,15 @@ end
 function calcSpatialLikelihood(events::EventList, ps::SkyCoords.ICRSCoords)
     output = zeros(Float64, events.N)
     #ang_sep = separation.(events.coords, ps)
-    ang_sep = zeros(Float64, events.N)
+    #ang_sep = zeros(Float64, events.N)
     #sigma_squared = zeros(Float64, events.N)
-    for i = 1:events.N
-        ang_sep[i] = separation(events.coords[i], ps)
-    end
     sigma_squared = ustrip.(u"rad", events.ang_err).^2
-    return log.(ang_sep ./ sin.(ang_sep)) - log.(2 * pi * sigma_squared) - 0.5 * (ang_sep.^2 ./ sigma_squared)
+    for i = 1:events.N
+        ang_sep = separation(events.coords[i], ps)
+        output[i] = log(ang_sep / sin(ang_sep)) - log(2 * pi * sigma_squared[i]) - 0.5 * ang_sep^2 / sigma_squared[i]
+    end
+    #return log.(ang_sep ./ sin.(ang_sep)) - log.(2 * pi * sigma_squared) - 0.5 * (ang_sep.^2 ./ sigma_squared)
+    return output
 end
 
 end
