@@ -39,4 +39,8 @@ function NumberFluxPowerLaw(params::NamedTuple, Emin, Emax)
     return sol.u
 end
 
+function calcNorm(Nex, T, gamma, exp_func)
+    return Nex / T / exp_func(gamma)
+end
+
 end
