@@ -39,7 +39,7 @@ struct BackgroundSource <: Source
     likelihood
 end
 
-function loadBackgroundSource(season::Int)
+function load_background_source(season::Int)
     if season != IC86_II
         println("season not implemented")
         return 0.

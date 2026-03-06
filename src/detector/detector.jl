@@ -26,7 +26,7 @@ IC86_I_path = "IC86_I_effectiveArea.csv"
 IC86_II_path = "IC86_II_effectiveArea.csv"
 
 
-function loadEffectiveArea(season)
+function load_aeff(season)
     if season == IC40
         path = joinpath(BasePath, IC40_path)
     elseif season == IC59
@@ -56,14 +56,14 @@ function loadEffectiveArea(season)
     EffectiveArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area)
 end
 
-function constructEffectiveAreaInterpolation(aeff::EffectiveArea)
+function construct_aeff_interpolation(aeff::EffectiveArea)
     area = copy(aeff.area)
     nonzero_min = minimum(area[area .> 0.])
     area[area.==0.] .= 1e-2 * nonzero_min
     linear_interpolation((aeff.c_log10eBins, aeff.c_sinDecBins), area)
 end
 
-function constructEffectiveAreaLogInterpolation(aeff::EffectiveArea)
+function construct_aeff_log_interpolation(aeff::EffectiveArea)
     area = copy(aeff.area)
     nonzero_min = minimum(area[area .> 0.])
     area[area.==0.] .= 1e-2 * nonzero_min
@@ -77,7 +77,7 @@ struct EnergyResolution
     eres
 end
 
-function loadEnergyResolution()
+function load_eres()
     ereco = Vector(range(start=1.05, stop=9.00, step=0.01))
     path = joinpath(@__DIR__, "../../inputs/eres_ic86ii.dat")
     eres = readdlm(path)
@@ -88,7 +88,7 @@ function loadEnergyResolution()
     EnergyResolution(ereco, etrue, eres)
 end
 
-function loadEnergyLikelihood(eres::EnergyResolution)
+function load_energy_llh(eres::EnergyResolution)
     ereco = eres.c_log10eRecoBins
     etrue = eres.c_log10eTrueBins
     grid = eres.eres

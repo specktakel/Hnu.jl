@@ -18,7 +18,7 @@ const IC86_V_path = "IC86_V_exp.csv"
 const IC86_VI_path = "IC86_VI_exp.csv"
 const IC86_VII_path = "IC86_VII_exp.csv"
 
-function loadUptime(season::Int)
+function load_uptime(season::Int)
     if season == IC40
         fname = joinpath(BasePath, IC40_path)
     elseif season == IC59
