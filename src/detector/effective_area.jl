@@ -1,0 +1,3 @@
+module EffectiveArea
+
+end
