@@ -19,6 +19,10 @@ Pkg.develop(path="../Hnu")
 ```
 
 ```julia
+Pkg.add("ProfileView")
+```
+
+```julia
 using Revise
 using Hnu
 using DelimitedFiles
@@ -36,6 +40,7 @@ using Roots
 using Hnu.CosmoUnits
 using StatsFuns: logsumexp
 using ArraysOfArrays
+using Profile
 ```
 
 ```julia
@@ -152,7 +157,7 @@ events.N
 ```
 
 ```julia
-bg_norm = log(1 / log(1e9 / 1e2)) .+ log(761162) .- log(1.8998668e8) .- log(11)
+bg_norm = log(1 / log(1e9 / 1e2)) .+ log(761162) .- log(1.8998668e8) .- log(events.N)
 ```
 
 ```julia
@@ -222,6 +227,18 @@ end
 ```
 
 ```julia
+params = (Nex=1., Nex_bg=10., E=fill(1e3, events.N), gamma=2.0)
+```
+
+```julia
+@profview llh(params)
+```
+
+```julia
+Profile.print(format=:flat)
+```
+
+```julia
 likelihood = let signal_llh = signal_llh, background_llh = background_llh
     logfuncdensity(function (params)
         function loglike(params)
@@ -253,11 +270,11 @@ posterior = PosteriorMeasure(likelihood, prior)
 ```
 
 ```julia
-samples = bat_sample(posterior, TransformedMCMC(proposal = RandomWalk(), nsteps = 10^4, nchains = 2)).result
+sampled = bat_sample(posterior, TransformedMCMC(proposal = RandomWalk(), nsteps = 10^4, nchains = 2))
 ```
 
 ```julia
-mean(samples)
+sampled.evaluated.measure.likelihood
 ```
 
 ```julia
