@@ -11,5 +11,7 @@ include("sources/cosmo_units.jl")
 include("sources/cosmology.jl")
 include("detector/detector.jl")
 include("detector/lifetime.jl")
+include("detector/energy_resolution.jl")
+include("detector/effective_area.jl")
 
 end

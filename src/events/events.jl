@@ -39,7 +39,7 @@ end
 
 EventList(mjd, ra, dec, ang_err, energy, detector) = EventList(mjd, ra, dec, ang_err, ICRSCoords.(ra, dec), energy, detector, length(energy))
 
-function loadEvents(season)
+function load_events(season)
     fname = IC40_PATH
     if season == IC40
         fname = IC40_PATH
@@ -66,17 +66,17 @@ function loadEvents(season)
     EventList(events[:, 1], events[:, 4]u"deg", events[:, 5]u"deg", events[:, 3]u"deg", events[:, 2], detector_vector)
 end
 
-function selectEvents!(events::EventList, roi::CircularROI)
+function select_events!(events::EventList, roi::CircularROI)
     mask = Vector{Bool}(undef, events.N);
 
     for i = 1:events.N
         mask[i] = separation(events.coords[i], roi.center) <= ustrip(u"rad", roi.radius)
     end
-    selectEvents!(events, mask)
+    select_events!(events, mask)
 end
 
 
-function selectEvents!(events::EventList, mask)
+function select_events!(events::EventList, mask)
     events.mjd = events.mjd[mask]
     events.ra = events.ra[mask]
     events.dec = events.dec[mask]
@@ -86,7 +86,7 @@ function selectEvents!(events::EventList, mask)
     events.N = length(events.energy)
 end
 
-function calcSpatialLikelihood(events::EventList, ps::SkyCoords.ICRSCoords)
+function calc_spatial_llh(events::EventList, ps::SkyCoords.ICRSCoords)
     output = zeros(Float64, events.N)
     #ang_sep = separation.(events.coords, ps)
     #ang_sep = zeros(Float64, events.N)
