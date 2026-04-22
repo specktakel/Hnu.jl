@@ -19,7 +19,7 @@ function powerlaw_logdomain(params::NamedTuple)
     return N0 * x0 * (10^(log10x - log10x0))^(-gamma + 1) * log(10.)
 end
 
-function powerlaw_energyflux(params::NamedTuple, Emin, Emax)
+function powerlaw_energyflux(params::NamedTuple, Emin=1e2, Emax=1e9)
     function integrand(logx, p)
         params = merge(p, (log10E=logx,))
         return powerlaw_logdomain(params) * p.E0
@@ -29,7 +29,7 @@ function powerlaw_energyflux(params::NamedTuple, Emin, Emax)
     return sol.u
 end
 
-function powerlaw_numberflux(params::NamedTuple, Emin, Emax)
+function powerlaw_numberflux(params::NamedTuple, Emin=1e2, Emax=1e9)
     function integrand(logx, p)
         params = merge(p, (log10E=logx,))
         return powerlaw_logdomain(params)
