@@ -7,7 +7,6 @@ include("./detector.jl")
 import .Detector
 
 struct EnergyResolution
-    #season
     c_log10eRecoBins
     c_log10eTrueBins
     eres
@@ -29,6 +28,7 @@ function load_energy_llh(eres::EnergyResolution)
     etrue = eres.c_log10eTrueBins
     grid = eres.eres
     interp = linear_interpolation((ereco, etrue), grid)
+    return interp
 end
 
 end

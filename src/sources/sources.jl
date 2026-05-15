@@ -9,6 +9,7 @@ include("../detector/detector.jl")
 import .Detector: IC86_II
 
 export SourceList, PointSource, AstroDiff, Atmospheric
+
 abstract type Source end
 
 struct PointSource <: Source
