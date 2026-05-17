@@ -15,7 +15,7 @@ function calculate_exposure(spectrum, aeff, params, dec, Emin::Unitful.Energy=1e
 end
 
 function calculate_exposure_grid(spectrum, aeff, paramGrid, params, dec)
-    out = Vector{Float64}(undef, length(paramGrid))
+    out = zeros(length(paramGrid))
     for i = eachindex(paramGrid)
         out[i] = calculate_exposure(spectrum, aeff, merge((gamma=paramGrid[i],), params), dec).u
     end

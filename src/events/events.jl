@@ -87,7 +87,7 @@ function select_events!(events::EventList, mask)
 end
 
 function calc_spatial_llh(events::EventList, ps::SkyCoords.ICRSCoords)
-    output = zeros(Float64, events.N)
+    output = zeros(Real, events.N)
     #ang_sep = separation.(events.coords, ps)
     #ang_sep = zeros(Float64, events.N)
     #sigma_squared = zeros(Float64, events.N)

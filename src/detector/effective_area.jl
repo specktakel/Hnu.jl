@@ -58,14 +58,22 @@ function construct_aeff_interpolation(aeff::EffectiveArea)
     area = copy(aeff.area)
     nonzero_min = minimum(area[area .> 0.])
     area[area.==0.] .= 1e-2 * nonzero_min
-    linear_interpolation((aeff.c_log10eBins, aeff.c_sinDecBins), area)
+    linear_interpolation(
+        (aeff.c_log10eBins, aeff.c_sinDecBins),
+        area,
+        extrapolation_bc = 1e-2 * nonzero_min
+    )
 end
 
 function construct_aeff_log_interpolation(aeff::EffectiveArea)
     area = copy(aeff.area)
     nonzero_min = minimum(area[area .> 0.])
     area[area.==0.] .= 1e-2 * nonzero_min
-    linear_interpolation((aeff.c_log10eBins, aeff.c_sinDecBins), log.(area))
+    linear_interpolation(
+        (aeff.c_log10eBins, aeff.c_sinDecBins),
+        log.(area),
+        extrapolation_bc = log(1e-2 * nonzero_min)
+    )
 end
 
 

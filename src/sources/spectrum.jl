@@ -2,7 +2,7 @@ module Spectrum
 
 using Integrals: IntegralProblem, solve, QuadGKJL
 
-function powerlaw(params::NamedTuple)
+function powerlaw(params)
     N0 = params.norm
     x = params.E
     x0 = params.E0
@@ -10,7 +10,7 @@ function powerlaw(params::NamedTuple)
     return N0 * (x / x0)^(-gamma)
 end
 
-function powerlaw_logdomain(params::NamedTuple)
+function powerlaw_logdomain(params)
     N0 = params.norm
     log10x = params.log10E
     gamma = params.gamma
@@ -19,7 +19,7 @@ function powerlaw_logdomain(params::NamedTuple)
     return N0 * x0 * (10^(log10x - log10x0))^(-gamma + 1) * log(10.)
 end
 
-function powerlaw_energyflux(params::NamedTuple, Emin=1e2, Emax=1e9)
+function powerlaw_energyflux(params, Emin=1e2, Emax=1e9)
     function integrand(logx, p)
         params = merge(p, (log10E=logx,))
         return powerlaw_logdomain(params) * p.E0
@@ -29,7 +29,7 @@ function powerlaw_energyflux(params::NamedTuple, Emin=1e2, Emax=1e9)
     return sol.u
 end
 
-function powerlaw_numberflux(params::NamedTuple, Emin=1e2, Emax=1e9)
+function powerlaw_numberflux(params, Emin=1e2, Emax=1e9)
     function integrand(logx, p)
         params = merge(p, (log10E=logx,))
         return powerlaw_logdomain(params)
