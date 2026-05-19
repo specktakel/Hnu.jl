@@ -6,10 +6,10 @@ using DelimitedFiles
 include("./detector.jl")
 import .Detector
 
-struct EnergyResolution
-    c_log10eRecoBins
-    c_log10eTrueBins
-    eres
+struct ERes{T<:Real}
+    c_log10eRecoBins::Vector{T}
+    c_log10eTrueBins::Vector{T}
+    eres::Array{T, 2}
 end
 
 function load_eres()
@@ -20,10 +20,10 @@ function load_eres()
     etrue = readdlm(path)[:, 1]
     etrue[1] = 2.0
     etrue[end] = 9.0
-    EnergyResolution(ereco, etrue, eres)
+    ERes(ereco, etrue, eres)
 end
 
-function load_energy_llh(eres::EnergyResolution)
+function load_energy_llh(eres::ERes)
     ereco = eres.c_log10eRecoBins
     etrue = eres.c_log10eTrueBins
     grid = eres.eres

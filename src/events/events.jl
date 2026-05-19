@@ -26,20 +26,20 @@ const IC86_I = 4
 const IC86_II = 5
 
 
-mutable struct EventList
-    mjd::Vector
-    ra::Vector
-    dec::Vector
-    ang_err::Vector
-    coords::Vector
-    energy::Vector
-    detector::Vector
+mutable struct EventList{T<:Real}
+    mjd::Vector{T}
+    ra::Vector{Quantity{T, NoDims, typeof(u"deg")}}
+    dec::Vector{Quantity{T, NoDims, typeof(u"deg")}}
+    ang_err::Vector{Quantity{T, NoDims, typeof(u"deg")}}
+    coords::Vector{ICRSCoords{T}}
+    energy::Vector{T}
+    detector::Vector{Int}
     N::Int
 end
 
 EventList(mjd, ra, dec, ang_err, energy, detector) = EventList(mjd, ra, dec, ang_err, ICRSCoords.(ra, dec), energy, detector, length(energy))
 
-function load_events(season)
+function load_events(season::Int)
     fname = IC40_PATH
     if season == IC40
         fname = IC40_PATH
@@ -76,7 +76,7 @@ function select_events!(events::EventList, roi::CircularROI)
 end
 
 
-function select_events!(events::EventList, mask)
+function select_events!(events::EventList, mask::BitVector)
     events.mjd = events.mjd[mask]
     events.ra = events.ra[mask]
     events.dec = events.dec[mask]
@@ -87,7 +87,7 @@ function select_events!(events::EventList, mask)
 end
 
 function calc_spatial_llh(events::EventList, ps::SkyCoords.ICRSCoords)
-    output = zeros(Real, events.N)
+    output = zeros(eltype(events.energy), events.N)
     #ang_sep = separation.(events.coords, ps)
     #ang_sep = zeros(Float64, events.N)
     #sigma_squared = zeros(Float64, events.N)

@@ -12,17 +12,17 @@ H0 = 70u"km/s/Mpc"
 c = 3e5u"km/s"
 DH = c / H0
 
-function E(z)
+function E(z::Real)
     Omp = Om * (1 + z)^3
     return sqrt(Omp + Ol)
 end
 
-function hubble_factor(z)
+function hubble_factor(z::Real)
     return H0 * E(z)
 end
 
-function comoving_distance(z)
-    function scale(z, p)
+function comoving_distance(z::Real)
+    function scale(z::Real)
         return 1 / E(z)
     end
 
@@ -30,11 +30,11 @@ function comoving_distance(z)
     return sol.u * DH
 end
 
-function luminosity_distance(z)
+function luminosity_distance(z::Real)
     return (1 + z) * comoving_distance(z)
 end
 
-function redshift(dL)
+function redshift(dL::Unitful.Length)
     find_zero(x -> ustrip(u"Mpc", dL) - ustrip(u"Mpc", luminosity_distance(x)), 0.2)
 end
 

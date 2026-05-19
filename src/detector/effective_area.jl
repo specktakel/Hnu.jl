@@ -13,13 +13,13 @@ IC86_I_path = "IC86_I_effectiveArea.csv"
 IC86_II_path = "IC86_II_effectiveArea.csv"
 
 
-struct EffectiveArea
-    season
-    log10eBins    # log10(E/GeV)
-    c_log10eBins
-    sinDecBins   # dimension less
-    c_sinDecBins
-    area    # in m2
+struct EffArea{T<:Real}
+    season::Int
+    log10eBin::Vector{T}    # log10(E/GeV)
+    c_log10eBins::Vector{T}
+    sinDecBins::Vector{T}   # dimension less
+    c_sinDecBins::Vector{T}
+    area::Array{T, 2}    # in m2
 end
 
 
@@ -51,10 +51,10 @@ function load_aeff(season)
     c_log10eBins[end] = log10eBins[end]
     c_sinDecBins[1] = sinDecBins[1]
     c_sinDecBins[end] = sinDecBins[end]
-    EffectiveArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area)
+    EffArea(season, log10eBins, c_log10eBins, sinDecBins, c_sinDecBins, area)
 end
 
-function construct_aeff_interpolation(aeff::EffectiveArea)
+function construct_aeff_interpolation(aeff::EffArea)
     area = copy(aeff.area)
     nonzero_min = minimum(area[area .> 0.])
     area[area.==0.] .= 1e-2 * nonzero_min
@@ -65,7 +65,7 @@ function construct_aeff_interpolation(aeff::EffectiveArea)
     )
 end
 
-function construct_aeff_log_interpolation(aeff::EffectiveArea)
+function construct_aeff_log_interpolation(aeff::EffArea)
     area = copy(aeff.area)
     nonzero_min = minimum(area[area .> 0.])
     area[area.==0.] .= 1e-2 * nonzero_min
