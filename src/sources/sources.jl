@@ -35,9 +35,9 @@ end
     #SourceList(PS, AstroDiff, Atmospheric) = PS isa Vector ? new(PS, AstroDiff, Atmospheric) : new([PS], AstroDiff, Atmospheric)
 end
 
-struct BackgroundSource <: Source
-    season
-    likelihood
+struct BackgroundSource{T<:Real} <: Source
+    season::Int
+    likelihood::Array{T}
 end
 
 function load_background_source(season::Int)
