@@ -5,9 +5,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.19.1
+      jupytext_version: 1.19.3
   kernelspec:
-    display_name: Julia 1.12
+    display_name: Julia 1.12.6
     language: julia
     name: julia-1.12
 ---
@@ -48,9 +48,13 @@ events = Hnu.Events.EventList(fill(99, N), data[:, 3]u"deg", data[:, 4]u"deg", d
 ```
 
 ```julia
+EventList(fill(3., 10), fill(1.0u"deg", 10), fill(4., 10))
+```
+
+```julia
 eres = Hnu.EnergyResolution.load_eres();
 energy_llh = Hnu.EnergyResolution.load_energy_llh(eres);
-# events = Hnu.Events.load_events(5)
+events = Hnu.Events.load_events(5)
 ps = ICRSCoords(77.35u"deg", 5.7u"deg")
 roi = Hnu.ROI.CircularROI(ps, 5u"deg")
 aeff = Hnu.EffectiveArea.load_aeff(5);
@@ -78,11 +82,23 @@ end
 ```
 
 ```julia
-roi_mask = Vector{Bool}(undef, events.N);
+events.N
+```
+
+```julia
+Revise.revise()
+```
+
+```julia
+roi_mask = BitVector(undef, events.N);
 
 for i = 1:events.N
     roi_mask[i] = separation(events.coords[i], roi.center) <= ustrip(u"rad", roi.radius)
 end
+```
+
+```julia
+roi_mask
 ```
 
 ```julia
@@ -94,9 +110,13 @@ Hnu.Events.select_events!(events, roi)
 ```
 
 ```julia
-"""
-MJD_min = 58010
-MJD_max = 58020
+Revise.revise()
+```
+
+```julia
+
+MJD_min = 56043.42312499
+MJD_max = 58309.08234953
 
 
 mask_min = events.mjd .>= MJD_min
@@ -104,7 +124,7 @@ mask_max = events.mjd .<= MJD_max
 
 mask = mask_min .* mask_max;
 Hnu.Events.select_events!(events, mask)
-"""
+
 ```
 
 ```julia
@@ -116,9 +136,17 @@ sinDecPS = sin(ustrip(u"rad", pointsource.coord.dec))
 ```
 
 ```julia
-#bg = Hnu.Sources.load_background_source(Hnu.Detector.IC86_II)
-#bg_llh = bg.likelihood[roi_mask]
-#bg_llh = bg_llh[mask];
+Revise.revise()
+```
+
+```julia
+roi_mask.len
+```
+
+```julia
+bg = Hnu.Sources.load_background_source(Hnu.Detector.IC86_II)
+bg_llh = bg.likelihood[roi_mask]
+bg_llh = bg_llh[mask];
 ```
 
 ```julia
@@ -132,7 +160,8 @@ bg_llh = log.(readdlm("ps_2.1_10_bg_26_events_bg_likelihood.csv", comments=true,
 ```julia
 # T = 15590030.
 # T = 848956.89
-T = 1829442.4
+# T = 1829442.4
+T = 1.8998668e8
 
 calcNorm = make_calcNorm_function(T, exposure_function)
 ```
@@ -147,7 +176,7 @@ function build_signal_llh(T, calcNorm, spectrum, spatial_llh, log_interp_aeff, e
         Nex = params.Nex
         gamma = params.gamma
         E = params.E
-        llh = zeros(Real, events.N)
+        llh = zeros(eltype(E), events.N)
         norm = calcNorm(Nex, gamma)
         for i = 1:events.N
             llh[i] += log(spectrum((norm = norm, E0=1e5, gamma=gamma, E=E[i], log10E=log10(E[i]), log10E0=log10(1e5))))
@@ -165,7 +194,7 @@ function build_bg_llh(events, bg_norm, bg_llh)
         Nex_bg = params.Nex_bg
         E = params.E
         log_Nex_bg = log(Nex_bg)
-        llh = zeros(Real, events.N)
+        llh = zeros(eltype(E), events.N)
         for i = 1:events.N
             llh[i] = bg_llh[i] + bg_norm - log(E[i]) + log_Nex_bg
         end
@@ -208,11 +237,31 @@ end
 ```
 
 ```julia
+@time llh(params)
+```
+
+```julia
+@time llh(params)
+```
+
+```julia
 params = (Nex=10., Nex_bg=26., E=fill(1e3, events.N), gamma=2.0)
 ```
 
 ```julia
-llh(params)
+@time llh(params)
+```
+
+```julia
+ProfileSVG.@profview signal_llh(params)
+```
+
+```julia
+ProfileSVG.@profview llh(params)
+```
+
+```julia
+using ProfileView
 ```
 
 ```julia
@@ -312,6 +361,23 @@ energies = flatview(samples.v.E[:, 1])
 
 ```julia
 plot(log10.(energies[2, :]), mean=true, nbins=50)
+```
+
+```julia
+function profile_test(n)
+    for i = 1:n
+        A = randn(100,100,20)
+        m = maximum(A)
+        Am = mapslices(sum, A; dims=2)
+        B = A[:,:,5]
+        Bsort = mapslices(sort, B; dims=1)
+        b = rand(100)
+        C = B.*b
+    end
+end
+
+ProfileSVG.@profview profile_test(1)  # run once to trigger compilation (ignore this one)
+ProfileSVG.@profview profile_test(10)
 ```
 
 ```julia
